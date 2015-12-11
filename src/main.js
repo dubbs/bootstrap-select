@@ -161,6 +161,7 @@
    * jQuery fn
    */
   $.fn.bootstrapSelectToButton = function(options) {
+    options = $.extend({}, $.fn.bootstrapSelectToButton.defaults, options);
     return this.each(function() {
       $(this).data('options', options);
       this.style.display = 'none';
