@@ -6,7 +6,7 @@
 
     var ATTR_DATA_JS = 'data-js-bs';
     var TEMPLATE_GROUP  = '<div class="btn-group"></div>';
-    var TEMPLATE_BUTTON = '<button id="{id}" type="button" class="btn dropdown-toggle {style}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span {data-js}>{text}</span> <span class="caret"></span></button>';
+    var TEMPLATE_BUTTON = '<button id="{id}" type="button" class="btn dropdown-toggle {style}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span {data-js}>{text}</span> {icon}</button>';
     var TEMPLATE_MENU = '<ul class="dropdown-menu"></ul>';
     var TEMPLATE_MENU_ITEM = '<li{disabled}><a href="#">{text}</a></li>';
 
@@ -16,12 +16,13 @@
      * @param text
      * @returns {*|jQuery|HTMLElement}
      */
-    var buildButton = function (id, text, style) {
+    var buildButton = function (id, text, style, icon) {
       var buttonHTML = TEMPLATE_BUTTON
         .replace(/\{id\}/g, id)
         .replace(/\{text\}/g, text)
         .replace(/\{style\}/g, style)
-        .replace(/\{data-js\}/g, ATTR_DATA_JS);
+        .replace(/\{data-js\}/g, ATTR_DATA_JS)
+        .replace(/\{icon\}/g, icon);
       return $(buttonHTML);
     };
 
@@ -120,12 +121,14 @@
     var transformSelect = function () {
 
       var $select = $(this);
+      var options = $select.data('options');
 
       var id = $select.attr('id');
       var text = $select.find(':selected').text();
-      var style = $select.data('style') || 'btn-default';
+      var style = options.classButtonStyle;
+      var icon = options.iconTemplate;
 
-      var $button    = buildButton(id, text, style);
+      var $button    = buildButton(id, text, style, icon);
       var $group     = buildButtonGroup();
       var $menuItems = buildMenuItems($select);
       var $menu      = buildMenu($menuItems);
@@ -155,13 +158,19 @@
   })();
 
   /**
-   * Add to jQuery
+   * jQuery fn
    */
   $.fn.bootstrapSelectToButton = function(options) {
     return this.each(function() {
+      $(this).data('options', options);
       this.style.display = 'none';
       bootstrapSelectToButton.transformSelect.call(this);
     });
+  };
+
+  $.fn.bootstrapSelectToButton.defaults = {
+    iconTemplate: '<span class="caret"></span>',
+    classButtonStyle: 'btn-default'
   };
 
 }(this, this.document, this.jQuery));
