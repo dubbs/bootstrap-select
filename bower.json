@@ -1,0 +1,30 @@
+{
+  "name": "bootstrap-select-to-button",
+  "main": "src/main.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/dubbs/bootstrap-select-to-button",
+  "authors": [
+    "Kevin Warrington <kevin.warrington@gmail.com>"
+  ],
+  "description": "Transforms an HTML select element to a Bootstrap dropdown button group",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "jquery",
+    "bootstrap",
+    "select",
+    "plugin"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6"
+  }
+}
