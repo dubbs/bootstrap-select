@@ -2,7 +2,7 @@
 
   'use strict';
 
-  var brancheeSelect = (function () {
+  var bootstrapSelectToButton = (function () {
 
     var ATTR_DATA_JS = 'data-js-bs';
     var TEMPLATE_GROUP  = '<div class="btn-group"></div>';
@@ -157,10 +157,10 @@
   /**
    * Add to jQuery
    */
-  $.fn.brancheeSelect = function(options) {
+  $.fn.bootstrapSelectToButton = function(options) {
     return this.each(function() {
       this.style.display = 'none';
-      brancheeSelect.transformSelect.call(this);
+      bootstrapSelectToButton.transformSelect.call(this);
     });
   };
 
