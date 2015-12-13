@@ -134,8 +134,8 @@
       var $menu      = buildMenu($menuItems);
 
       // add to group
-      $menu.appendTo($group);
       $button.appendTo($group);
+      $menu.appendTo($group);
 
       // group to select
       $group.insertAfter($select);
