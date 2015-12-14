@@ -1,7 +1,7 @@
 {
   "name": "bootstrap-select-to-button",
   "main": "src/main.js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/dubbs/bootstrap-select-to-button",
   "authors": [
     "Kevin Warrington <kevin.warrington@gmail.com>"
