@@ -2,6 +2,13 @@
 
   'use strict';
 
+  // :icontains
+  $.expr[":"].icontains = $.expr.createPseudo(function(arg) {
+    return function(el) {
+      return $(el).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+    };
+  });
+
   var bootstrapSelectToButton = (function () {
 
     var ATTR_DATA_JS = 'data-js-bs';
@@ -9,6 +16,7 @@
     var TEMPLATE_BUTTON = '<button id="{id}" type="button" class="btn dropdown-toggle {style}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span {data-js}>{text}</span> {icon}</button>';
     var TEMPLATE_MENU = '<ul class="dropdown-menu"></ul>';
     var TEMPLATE_MENU_ITEM = '<li{disabled}><a href="#">{text}</a></li>';
+    var TEMPLATE_SEARCH = '<div class="dropdown"><form>{searchInput}<span class="help-block" style="display:none">{searchNoResultsText}</span></form></div>';
 
     /**
      * Build button from template
@@ -39,7 +47,10 @@
      * @param $menuItems
      * @returns {*|jQuery}
      */
-    var buildMenu = function ($menuItems) {
+    var buildMenu = function ($menuItems, $menuSearch) {
+      if ($menuSearch.length) {
+        $menuItems.unshift($menuSearch);
+      }
       return $(TEMPLATE_MENU).append($menuItems);
     };
 
@@ -65,7 +76,23 @@
      * @returns {*}
      */
     var buildMenuItems = function ($select) {
-      return $select.find('option').map(buildMenuItem).toArray();
+      var items = $select.find('option').map(buildMenuItem).toArray();
+      return items;
+    };
+
+    /**
+     * Build menu search box
+     * @param $select
+     * @returns {*}
+     */
+    var buildMenuSearch = function ($menuItems, options) {
+      if ($menuItems.length > options.minItemsForSearch) {
+        var searchHTML = TEMPLATE_SEARCH
+          .replace(/\{searchInput\}/g, options.templateSearchInput)
+          .replace(/\{searchNoResultsText\}/g, options.templateSearchNoResultsText);
+        return $(searchHTML);
+      }
+      return $();
     };
 
     /**
@@ -111,8 +138,28 @@
      */
     var handleShown = function (e) {
       var $group = $(this);
-      var selectedIndex = $group.data('select').find(':selected').index();
-      $group.find('li:eq(' + selectedIndex + ') a').focus();
+      var $searchInput = $group.find('.dropdown input');
+      if ($searchInput.length) {
+        $searchInput.focus();
+      } else {
+        var selectedIndex = $group.data('select').find(':selected').index();
+        $group.find('li:eq(' + selectedIndex + ') a').focus();
+      }
+    };
+
+    /**
+     * Event handler for search
+     * @param e
+     */
+    var handleSearch = function (e) {
+      var $all = $(this).find('li').hide();
+      var $matches = $all.filter(':icontains(' + $(e.target).val() + ')').show();
+      var $helpBlock = $(this).find('.help-block');
+      if ($matches.length) {
+        $helpBlock.hide();
+      } else {
+        $helpBlock.show();
+      }
     };
 
     /**
@@ -126,12 +173,13 @@
       var id = $select.attr('id');
       var text = $select.find(':selected').text();
       var style = options.classButtonStyle;
-      var icon = options.iconTemplate;
+      var icon = options.templateIcon;
 
-      var $button    = buildButton(id, text, style, icon);
-      var $group     = buildButtonGroup();
-      var $menuItems = buildMenuItems($select);
-      var $menu      = buildMenu($menuItems);
+      var $button     = buildButton(id, text, style, icon);
+      var $group      = buildButtonGroup();
+      var $menuItems  = buildMenuItems($select);
+      var $menuSearch = buildMenuSearch($menuItems, options);
+      var $menu       = buildMenu($menuItems, $menuSearch);
 
       // add to group
       $button.appendTo($group);
@@ -149,6 +197,7 @@
       // events
       $group.on('click', 'a', handleSelect);
       $group.on('shown.bs.dropdown', handleShown);
+      $group.on('.dropdown input', handleSearch);
     };
 
     return {
@@ -170,8 +219,11 @@
   };
 
   $.fn.bootstrapSelectToButton.defaults = {
-    iconTemplate: '<span class="caret"></span>',
-    classButtonStyle: 'btn-default'
+    templateIcon:                '<span class="caret"></span>',
+    templateSearchInput:         '<input class="form-control" placeholder="Search">',
+    templateSearchNoResultsText: 'No results found',
+    classButtonStyle:            'btn-default',
+    minItemsForSearch:           Infinity
   };
 
 }(this, this.document, this.jQuery));

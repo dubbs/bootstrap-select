@@ -1,6 +1,6 @@
 {
   "name": "bootstrap-select-to-button",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Transforms an HTML select element to a Bootstrap dropdown button group",
   "main": "src/main.js",
   "scripts": {
