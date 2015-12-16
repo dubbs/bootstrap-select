@@ -139,7 +139,7 @@
      */
     var updateButtonText = function ($select) {
       var $buttonText = $select.data('$buttonText');
-      $buttonText.text($select.val());
+      $buttonText.text($select.find(':selected').text());
     };
 
     /**
