@@ -58,7 +58,7 @@
       var options = $select.data('options');
       var $buttonGroup = $(options.templateButtonGroup);
       // store reference to select for buttonGroupHandlers
-      $buttonGroup.data('$select', $select); 
+      $buttonGroup.data('$select', $select);
       return $buttonGroup;
     };
 
@@ -242,15 +242,16 @@
 
       // insert group after select
       $buttonGroup.insertAfter($select);
+
+      // set initial state
+      updateButtonText($select);
+      updateButtonState($select);
       
       // events
       $select.on('change', handleSelectChange);
       $buttonGroup.on('click', 'li', handleClick);
       $buttonGroup.on('shown.bs.dropdown', handleShown);
       $buttonGroup.on('.dropdown input', handleSearch);
-
-      // set initial state
-      $select.trigger('change');
     };
 
     return {
