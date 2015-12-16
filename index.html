@@ -83,6 +83,69 @@
         </select>
       </div>
     </fieldset>
+    <fieldset>
+      <legend>Set Selected</legend>
+      <div class="form-group">
+        <label for="example4" class="control-label">Province</label>
+        <select id="example4" class="form-control">
+          <option>Alberta</option>
+          <option>British Columbia</option>
+          <option>Manitoba</option>
+          <option>New Brunswick</option>
+          <option>Newfoundland and Labrador</option>
+          <option>Northwest Territories</option>
+          <option>Nova Scotia</option>
+          <option>Nunavut</option>
+          <option>Ontario</option>
+          <option>Prince Edward Island</option>
+          <option>Quebec</option>
+          <option>Saskatchewan</option>
+          <option>Yukon</option>
+        </select>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Set Disabled</legend>
+      <div class="form-group">
+        <label for="example5" class="control-label">Province</label>
+        <select id="example5" class="form-control">
+          <option>Alberta</option>
+          <option>British Columbia</option>
+          <option>Manitoba</option>
+          <option>New Brunswick</option>
+          <option disabled>Newfoundland and Labrador</option>
+          <option>Northwest Territories</option>
+          <option>Nova Scotia</option>
+          <option>Nunavut</option>
+          <option>Ontario</option>
+          <option>Prince Edward Island</option>
+          <option>Quebec</option>
+          <option>Saskatchewan</option>
+          <option>Yukon</option>
+        </select>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Set Enabled</legend>
+      <div class="form-group">
+        <label for="example6" class="control-label">Province</label>
+        <select id="example6" class="form-control" disabled>
+          <option>Alberta</option>
+          <option>British Columbia</option>
+          <option>Manitoba</option>
+          <option>New Brunswick</option>
+          <option disabled>Newfoundland and Labrador</option>
+          <option>Northwest Territories</option>
+          <option>Nova Scotia</option>
+          <option>Nunavut</option>
+          <option>Ontario</option>
+          <option>Prince Edward Island</option>
+          <option>Quebec</option>
+          <option>Saskatchewan</option>
+          <option>Yukon</option>
+        </select>
+      </div>
+    </fieldset>
   </form>
   <script>
   (function () {
@@ -98,13 +161,24 @@
   <script src="src/main.js"></script>
   <script>
   $('#example1').bootstrapSelectToButton();
+
   $('#example2').bootstrapSelectToButton({
     classButtonStyle: 'btn-primary'
   });
+
   $('#example3').bootstrapSelectToButton({
     minItemsForSearch: 5,
     templateSearchNoResultsText: 'No results y\'all'
   });
+
+  $('#example4').bootstrapSelectToButton();
+  $('#example4 option:eq(2)').prop('selected', true).change();
+
+  $('#example5').bootstrapSelectToButton();
+  $('#example5').prop('disabled', true).change();
+
+  $('#example6').bootstrapSelectToButton();
+  $('#example6').prop('disabled', false).change();
   </script>
 </body>
 </html>
