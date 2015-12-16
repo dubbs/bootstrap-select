@@ -5,7 +5,6 @@ This library requires [Bootstrap](http://getbootstrap.com/) and [jQuery](https:/
 
 ```html
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
 <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="path-to-bootstrap-select.js"></script>
@@ -19,7 +18,7 @@ The default settings should work for most projects.
 $('#select').bootstrapSelectToButton();
 ```
 
-If you require further customizations you will have to set options.  To see the full list of options, see `$.fn.bootstrapSelectToButton.defaults`.
+If you require further customizations you'll have to set options.  To see the full list of options, see `$.fn.bootstrapSelectToButton.defaults`.
 
 #### Examples
 
