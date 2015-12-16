@@ -11,12 +11,29 @@
 
   var bootstrapSelectToButton = (function () {
 
-    var ATTR_DATA_JS = 'data-js-bs';
-    var TEMPLATE_GROUP  = '<div class="btn-group"></div>';
-    var TEMPLATE_BUTTON = '<button id="{id}" type="button" class="btn dropdown-toggle {style}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span {data-js}>{text}</span> {icon}</button>';
-    var TEMPLATE_MENU = '<ul class="dropdown-menu"></ul>';
-    var TEMPLATE_MENU_ITEM = '<li{disabled}><a href="#">{text}</a></li>';
-    var TEMPLATE_SEARCH = '<div class="dropdown"><form>{searchInput}<span class="help-block" style="display:none">{searchNoResultsText}</span></form></div>';
+    /**
+     * Build button text from template
+     * @param text
+     * @returns {*|jQuery|HTMLElement}
+     */
+    var buildButtonText = function ($select) {
+      var options = $select.data('options');
+      var $buttonText = $(options.templateButtonText);
+      $select.data('$buttonText', $buttonText);
+      return $buttonText;
+    };
+
+    /**
+     * Build button icon from template
+     * @param text
+     * @returns {*|jQuery|HTMLElement}
+     */
+    var buildButtonIcon = function ($select) {
+      var options = $select.data('options');
+      var $buttonIcon = $(options.templateButtonIcon);
+      $select.data('$buttonIcon', $buttonIcon);
+      return $buttonIcon;
+    };
 
     /**
      * Build button from template
@@ -24,22 +41,25 @@
      * @param text
      * @returns {*|jQuery|HTMLElement}
      */
-    var buildButton = function (id, text, style, icon) {
-      var buttonHTML = TEMPLATE_BUTTON
-        .replace(/\{id\}/g, id)
-        .replace(/\{text\}/g, text)
-        .replace(/\{style\}/g, style)
-        .replace(/\{data-js\}/g, ATTR_DATA_JS)
-        .replace(/\{icon\}/g, icon);
-      return $(buttonHTML);
+    var buildButton = function ($select) {
+      var options = $select.data('options');
+      var $button = $(options.templateButton);
+      // add style from options
+      $button.addClass(options.classButtonStyle);
+      $select.data('$button', $button);
+      return $button;
     };
 
     /**
      * Build button group from template
      * @returns {*|jQuery|HTMLElement}
      */
-    var buildButtonGroup = function () {
-      return $(TEMPLATE_GROUP);
+    var buildButtonGroup = function ($select) {
+      var options = $select.data('options');
+      var $buttonGroup = $(options.templateButtonGroup);
+      // store reference to select for buttonGroupHandlers
+      $buttonGroup.data('$select', $select); 
+      return $buttonGroup;
     };
 
     /**
@@ -47,11 +67,9 @@
      * @param $menuItems
      * @returns {*|jQuery}
      */
-    var buildMenu = function ($menuItems, $menuSearch) {
-      if ($menuSearch.length) {
-        $menuItems.unshift($menuSearch);
-      }
-      return $(TEMPLATE_MENU).append($menuItems);
+    var buildMenu = function ($select) {
+      var options = $select.data('options');
+      return $(options.templateMenu);
     };
 
     /**
@@ -61,13 +79,17 @@
      * @returns {*|jQuery|HTMLElement}
      */
     var buildMenuItem = function (index, value) {
-      var $item = $(value);
-      var text = $item.text();
-      var disabled = $item.prop('disabled') ? ' class="disabled"' : '';
-      var menuItemHTML = TEMPLATE_MENU_ITEM
-        .replace(/\{disabled\}/g, disabled)
-        .replace(/\{text\}/g, text);
-      return $(menuItemHTML);
+      var options = this.data('options');
+      var $menuItem = $(options.templateMenuItem);
+      var $menuItemLink = $(options.templateMenuItemLink);
+      // set text
+      $menuItemLink.text($(value).text());
+      // set disabled
+      if ($(value).prop('disabled')) {
+        $menuItem.addClass('disabled');
+        $menuItemLink.prop('tabIndex', -1);
+      }
+      return $menuItem.append($menuItemLink);
     };
 
     /**
@@ -76,8 +98,9 @@
      * @returns {*}
      */
     var buildMenuItems = function ($select) {
-      var items = $select.find('option').map(buildMenuItem).toArray();
-      return items;
+      // setup proxy so we have access to options in menu item build
+      var buildMenuItemProxy = $.proxy(buildMenuItem, $select);
+      return $select.find('option').map(buildMenuItemProxy).toArray();
     };
 
     /**
@@ -85,50 +108,73 @@
      * @param $select
      * @returns {*}
      */
-    var buildMenuSearch = function ($menuItems, options) {
-      if ($menuItems.length > options.minItemsForSearch) {
-        var searchHTML = TEMPLATE_SEARCH
-          .replace(/\{searchInput\}/g, options.templateSearchInput)
-          .replace(/\{searchNoResultsText\}/g, options.templateSearchNoResultsText);
-        return $(searchHTML);
+    var buildMenuSearch = function ($select, menuItemsLength) {
+      var options = $select.data('options');
+      if (menuItemsLength > options.minItemsForSearch) {
+        return $(options.templateSearchForm);
       }
       return $();
     };
 
     /**
+     * Build menu search box
+     * @param $select
+     * @returns {*}
+     */
+    var linkButtonToLabel = function ($select, $button) {
+      var options = $select.data('options');
+      var originalId = $select.attr('id');
+      var newId = options.labelPrefix + $select.attr('id');
+
+      var $label = $('label[for="' + originalId + '"]');
+      $label.attr('for', newId);
+      $button.attr('id', newId);
+    };
+
+    
+    /**
      * Update button text after change
      * @param $group
      * @param $link
      */
-    var updateButtonText = function ($group, $link) {
-      var text = $link.text().trim();
-      var $buttonText = $group.find('[' + ATTR_DATA_JS + ']');
-      $buttonText.text(text);
+    var updateButtonText = function ($select) {
+      var $buttonText = $select.data('$buttonText');
+      $buttonText.text($select.val());
     };
 
     /**
-     * Update select this widget has replaced
-     * @param $options
+     * Update button state after change
+     * @param $group
      * @param $link
      */
-    var updateHiddenSelect = function ($options, $link) {
-      var index = $link.closest('li').index();
-      $options.eq(index).prop('selected', true);
+    var updateButtonState = function ($select) {
+      var $button = $select.data('$button');
+      $button.prop('disabled', $select.prop('disabled'));
     };
 
     /**
-     * Event handler for option select
+     * Event handler for select change
      * @param e
      */
-    var handleSelect = function (e) {
+    var handleSelectChange = function (e) {
+      var $select = $(e.delegateTarget);
+      updateButtonText($select);
+      updateButtonState($select);
+    };
+
+    /**
+     * Event handler for button item click
+     * @param e
+     */
+    var handleClick = function (e) {
       e.preventDefault();
-      var $group = $(e.delegateTarget);
-      var $link = $(e.currentTarget);
-      var $options = $group.data('select').find('option');
-      var isDisabled = $link.closest('li').hasClass('disabled');
-      if (!isDisabled) {
-        updateButtonText($group, $link);
-        updateHiddenSelect($options, $link);
+      var $btnGroup = $(e.delegateTarget);
+      var $btnGroupItem = $(e.currentTarget);
+      var $select = $btnGroup.data('$select');
+      var selectedIndex = $btnGroup.find('li').index($btnGroupItem);
+      var $option = $select.find('option').eq(selectedIndex);
+      if (!$option.prop('disabled')) {
+        $option.prop('selected', true).change();
       }
     };
 
@@ -137,13 +183,13 @@
      * @param e
      */
     var handleShown = function (e) {
-      var $group = $(this);
-      var $searchInput = $group.find('.dropdown input');
+      var $buttonGroup = $(this);
+      var $searchInput = $buttonGroup.find('.dropdown input');
       if ($searchInput.length) {
         $searchInput.focus();
       } else {
-        var selectedIndex = $group.data('select').find(':selected').index();
-        $group.find('li:eq(' + selectedIndex + ') a').focus();
+        var selectedIndex = $buttonGroup.data('$select').find(':selected').index();
+        $buttonGroup.find('li:eq(' + selectedIndex + ') a').focus();
       }
     };
 
@@ -152,13 +198,13 @@
      * @param e
      */
     var handleSearch = function (e) {
-      var $all = $(this).find('li').hide();
-      var $matches = $all.filter(':icontains(' + $(e.target).val() + ')').show();
-      var $helpBlock = $(this).find('.help-block');
-      if ($matches.length) {
-        $helpBlock.hide();
+      var $menuItems        = $(this).find('li').hide();
+      var $menuItemsMatched = $menuItems.filter(':icontains(' + $(e.target).val() + ')').show();
+      var $noResults        = $(this).find('.help-block');
+      if ($menuItemsMatched.length) {
+        $noResults.hide();
       } else {
-        $helpBlock.show();
+        $noResults.show();
       }
     };
 
@@ -168,36 +214,43 @@
     var transformSelect = function () {
 
       var $select = $(this);
-      var options = $select.data('options');
 
-      var id = $select.attr('id');
-      var text = $select.find(':selected').text();
-      var style = options.classButtonStyle;
-      var icon = options.templateIcon;
+      var $buttonIcon = buildButtonIcon($select);
+      var $buttonText = buildButtonText($select);
+      var $button     = buildButton($select);
 
-      var $button     = buildButton(id, text, style, icon);
-      var $group      = buildButtonGroup();
-      var $menuItems  = buildMenuItems($select);
-      var $menuSearch = buildMenuSearch($menuItems, options);
-      var $menu       = buildMenu($menuItems, $menuSearch);
+      $button.append($buttonText);
+      $button.append($buttonIcon);
 
-      // add to group
-      $button.appendTo($group);
-      $menu.appendTo($group);
+      var $buttonGroup = buildButtonGroup($select);
+      var $menuItems   = buildMenuItems($select);
+      var $menuSearch  = buildMenuSearch($select, $menuItems.length);
+      var $menu        = buildMenu($select);
 
-      // group to select
-      $group.insertAfter($select);
+      // add items to menu
+      if ($menuSearch.length) {
+        $menuItems.unshift($menuSearch);
+      }
+      $menu.append($menuItems)
 
-      // keep track of select
-      $group.data('select', $select);
+      // add button and menu to group
+      $buttonGroup.append($button);
+      $buttonGroup.append($menu);
 
-      // remove id, so label works
-      $select.attr('id', '');
+      // change label "for"
+      linkButtonToLabel($select, $button);
+
+      // insert group after select
+      $buttonGroup.insertAfter($select);
       
       // events
-      $group.on('click', 'a', handleSelect);
-      $group.on('shown.bs.dropdown', handleShown);
-      $group.on('.dropdown input', handleSearch);
+      $select.on('change', handleSelectChange);
+      $buttonGroup.on('click', 'li', handleClick);
+      $buttonGroup.on('shown.bs.dropdown', handleShown);
+      $buttonGroup.on('.dropdown input', handleSearch);
+
+      // set initial state
+      $select.trigger('change');
     };
 
     return {
@@ -219,12 +272,17 @@
   };
 
   $.fn.bootstrapSelectToButton.defaults = {
-    templateIcon:                '<span class="caret"></span>',
-    templateSearchInput:         '<input class="form-control" placeholder="Search">',
-    templateSearchNoResultsText: 'No results found',
-    classButtonStyle:            'btn-default',
-    minItemsForSearch:           Infinity
+    templateButton:       '<button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>',
+    templateButtonIcon:   '<span class="caret"></span>',
+    templateButtonText:   '<span>{text}</span>',
+    templateButtonGroup:  '<div class="btn-group"></div>',
+    templateMenu:         '<ul class="dropdown-menu"></ul>',
+    templateMenuItem:     '<li></li>',
+    templateMenuItemLink: '<a href="#"></a>',
+    templateSearchForm:   '<div class="dropdown"><form><input class="form-control" placeholder="Search"><span class="help-block" style="display:none">No results found</span></form></div>',
+    classButtonStyle:     'btn-default',
+    minItemsForSearch:    Infinity,
+    labelPrefix:          'bstb-'
   };
 
 }(this, this.document, this.jQuery));
-
