@@ -13,7 +13,7 @@
 
     /**
      * Build button text from template
-     * @param text
+     * @param $select
      * @returns {*|jQuery|HTMLElement}
      */
     var buildButtonText = function ($select) {
@@ -25,7 +25,7 @@
 
     /**
      * Build button icon from template
-     * @param text
+     * @param $select
      * @returns {*|jQuery|HTMLElement}
      */
     var buildButtonIcon = function ($select) {
@@ -37,8 +37,7 @@
 
     /**
      * Build button from template
-     * @param id
-     * @param text
+     * @param $select
      * @returns {*|jQuery|HTMLElement}
      */
     var buildButton = function ($select) {
@@ -52,6 +51,7 @@
 
     /**
      * Build button group from template
+     * @param $select
      * @returns {*|jQuery|HTMLElement}
      */
     var buildButtonGroup = function ($select) {
@@ -64,7 +64,7 @@
 
     /**
      * Build menu from template using menu items
-     * @param $menuItems
+     * @param $select
      * @returns {*|jQuery}
      */
     var buildMenu = function ($select) {
@@ -106,6 +106,7 @@
     /**
      * Build menu search box
      * @param $select
+     * @param menuItemsLength
      * @returns {*}
      */
     var buildMenuSearch = function ($select, menuItemsLength) {
@@ -119,6 +120,7 @@
     /**
      * Build menu search box
      * @param $select
+     * @param $button
      * @returns {*}
      */
     var linkButtonToLabel = function ($select, $button) {
@@ -134,8 +136,7 @@
     
     /**
      * Update button text after change
-     * @param $group
-     * @param $link
+     * @param $select
      */
     var updateButtonText = function ($select) {
       var $buttonText = $select.data('$buttonText');
@@ -144,12 +145,20 @@
 
     /**
      * Update button state after change
-     * @param $group
-     * @param $link
+     * @param $select
      */
     var updateButtonState = function ($select) {
       var $button = $select.data('$button');
       $button.prop('disabled', $select.prop('disabled'));
+    };
+
+    /**
+     * Update button focus after change
+     * @param $select
+     */
+    var updateFocus = function ($select) {
+      var $button = $select.data('$button');
+      $button.focus();
     };
 
     /**
@@ -160,6 +169,7 @@
       var $select = $(e.delegateTarget);
       updateButtonText($select);
       updateButtonState($select);
+      updateFocus($select);
     };
 
     /**
