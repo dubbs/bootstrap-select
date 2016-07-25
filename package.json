@@ -2,10 +2,10 @@
   "name": "bootstrap-select-to-button",
   "version": "0.3.3",
   "description": "Transforms an HTML select element to a Bootstrap dropdown button group",
-  "main": "src/main.js",
+  "main": "src/jquery.bootstrapSelectToButton.js",
   "scripts": {
     "postinstall": "$(npm bin)/bower install",
-    "min-js": "$(npm bin)/uglifyjs --compress --mangle --output dist/main.min.js -- src/main.js",
+    "min-js": "$(npm bin)/uglifyjs --compress --mangle --output dist/jquery.bootstrapSelectToButton.min.js -- src/jquery.bootstrapSelectToButton.js",
     "add-files": "git add .",
     "server": "python -m SimpleHTTPServer 8000"
   },

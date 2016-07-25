@@ -1,6 +1,6 @@
 {
   "name": "bootstrap-select-to-button",
-  "main": "src/main.js",
+  "main": "src/jquery.bootstrapSelectToButton.js",
   "version": "0.3.3",
   "homepage": "https://github.com/dubbs/bootstrap-select-to-button",
   "authors": [
