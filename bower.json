@@ -1,7 +1,7 @@
 {
   "name": "bootstrap-select-to-button",
   "main": "src/jquery.bootstrapSelectToButton.js",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "homepage": "https://github.com/dubbs/bootstrap-select-to-button",
   "authors": [
     "Kevin Warrington <kevin.warrington@gmail.com>"
